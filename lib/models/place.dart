@@ -15,13 +15,29 @@ class PlaceLocation {
 class Place {
   final String id;
   final String title;
-  final PlaceLocation location;
+  final PlaceLocation? location;
   final File image;
 
   Place({
     required this.id,
     required this.title,
-    required this.location,
     required this.image,
+    this.location,
   });
+
+  factory Place.fromJson(Map<String, dynamic> json) {
+    return Place(
+      id: json['id'],
+      title: json['title'],
+      image: File(json['image']),
+    );
+  }
+
+  Map<String, Object> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'image': image.path,
+    };
+  }
 }
