@@ -2,10 +2,13 @@
 
 import 'dart:io';
 
+import 'package:dart_flutter_maps/models/place.dart';
+import 'package:dart_flutter_maps/providers/great_places.dart';
 import 'package:dart_flutter_maps/widgets/image_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:provider/provider.dart';
 
 class PlaceFormScreen extends StatefulWidget {
   const PlaceFormScreen({super.key});
@@ -30,13 +33,25 @@ class _PlaceFormScreenState extends State<PlaceFormScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Selecione uma imagem!'),
-              backgroundColor: Colors.red,  
+              backgroundColor: Colors.red,
             ),
           );
-        } else {
-          debugPrint(_formKey.currentState!.value.toString());
+          return;
         }
-        debugPrint(_formKey.currentState!.value.toString());
+
+        final values = _formKey.currentState!.value;
+
+        Provider.of<GreatPlaces>(context, listen: false).addPlace(
+          values['Nome'] as String,
+          PlaceLocation(
+            latitude: 0,
+            longitude: 0,
+            address: '',
+          ),
+          _selectedImage!,
+        );
+
+        Navigator.of(context).pop();
       }
     }
 
