@@ -3,10 +3,16 @@
 import 'dart:io';
 
 import 'package:dart_flutter_maps/models/place.dart';
+import 'package:dart_flutter_maps/utils/db_utils.dart';
 import 'package:flutter/material.dart';
 
 class GreatPlaces with ChangeNotifier {
   List<Place> _itens = [];
+
+  Future<void> loadPlaces() async {
+    final dataList = await DbUtils.getData('place');
+    _itens = dataList.map(Place.fromJson).toList();
+  }
 
   List<Place> get itens {
     return [..._itens];
@@ -27,7 +33,11 @@ class GreatPlaces with ChangeNotifier {
       location: location,
       image: image,
     );
+
     _itens.add(newPlace);
+
+    DbUtils.insert('place', newPlace.toJson());
+
     notifyListeners();
   }
 }
