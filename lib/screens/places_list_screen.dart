@@ -20,31 +20,42 @@ class PlacesListScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<GreatPlaces>(
-        child: const Center(
-          child: Text('Nenhum local cadastrado!'),
-        ),
-        builder: (ctx, greatPlaces, ch) {
-          return greatPlaces.constItens == 0
-              ? Center(
-                  child: ch,
-                )
-              : ListView.builder(
-                  itemCount: greatPlaces.constItens,
-                  itemBuilder: (ctx, i) => ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: FileImage(
-                        greatPlaces.getItemByItem(i).image,
+      body: FutureBuilder(
+        future: Provider.of<GreatPlaces>(context, listen: false).loadPlaces(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.error != null) {
+            debugPrint(snapshot.error.toString());
+            return const Center(
+              child: Text('Ocorreu um erro!'),
+            );
+          }
+          return Consumer<GreatPlaces>(
+            child: const Text('Nenhum local cadastrado!'),
+            builder: (ctx, greatPlaces, ch) {
+              return greatPlaces.constItens == 0
+                  ? Center(child: ch)
+                  : ListView.builder(
+                      itemCount: greatPlaces.constItens,
+                      itemBuilder: (ctx, i) => ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: FileImage(
+                            greatPlaces.getItemByItem(i).image,
+                          ),
+                        ),
+                        title: Text(
+                          greatPlaces.getItemByItem(i).title,
+                        ),
+                        onTap: () {
+                          // Go to detail page ...
+                        },
                       ),
-                    ),
-                    title: Text(
-                      greatPlaces.getItemByItem(i).title,
-                    ),
-                    onTap: () {
-                      // Go to detail page ...
-                    },
-                  ),
-                );
+                    );
+            },
+          );
         },
       ),
     );
